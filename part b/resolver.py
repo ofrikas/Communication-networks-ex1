@@ -36,7 +36,7 @@ def main():
                 resolver_socket.sendto(query, (parent_ip, parent_port))
                 response, _ = resolver_socket.recvfrom(1024)
                 
-                # Handle the case where the response ends with "NS"
+                # Handle the case where the response ends with "NS" שששש
                 while response.decode().endswith("NS"):
                     # Extract the IP and port of the new parent server
                     response_parts = response.decode().split(',')
