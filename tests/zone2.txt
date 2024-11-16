@@ -1,0 +1,7 @@
+xxx.example.com,1.2.44.1,A
+email.example.com,1.2.44.2,A
+.subdomain.example.com,127.0.0.1:5002,NS
+.xxx.example.com,127.0.0.1:5002,NS
+biu.ac.il,1.2.44.3,A
+biu.ac.il,1.2.44.4,A
+.co.il,127.0.0.1:5002,NS

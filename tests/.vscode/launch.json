@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "name": "Python Debugger: Python File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": ["12345", "127.0.0.1", "5000", "60"]
+        }
+    ]
+}
