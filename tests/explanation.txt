@@ -1,10 +1,10 @@
 1) Run the client:
-python client.py 127.0.0.1 12345
+python3 client.py 127.0.0.1 12345
 
 2) Run all three servers (must be with the specified ports and IP addresses)
-a. python server.py 5000 zone1.txt
-b. python server.py 5001 zone2.txt
-c. python server.py 5002 zone3.txt
+a. python3 server.py 5000 zone1.txt
+b. python3 server.py 5001 zone2.txt
+c. python3 server.py 5002 zone3.txt
 
 3) Run the resolver in debugging mode (Press F5 in Visual Studio Code). Use the launch.json I provided
 It will be easier to find out whether or not data is taken from cache properly if needed 
@@ -15,5 +15,5 @@ b. query: www.subdomain.example.com (before the previous cache expires) and ensu
 c. query: goddamn.xxx.example.com and ensure it starts from server1, to server2 and finally obtains from server3
 d. query: xxx.example.com (before the previous cache expires) and ensure that it immediately goes to server2
 e. query: biu.ac.il and ensure that it takes it from server1 and that the ".il,127.0.0.1:5001,NS" mapping isn't used and isn't cached
-f. query: domainnotexist.ac.il and ensure it returns that the domain doesn't exist and that .co.il is properly cached
+f. query: domainnotexist.ac.il and ensure it returns that the domain doesn't exist and that .il is properly cached
 g. query: yaani.co.il (before the previous cache expires) and ensure that it obtains .il from the cache so that server2 is queried immediately

@@ -24,20 +24,71 @@ def main():
         while True:
             # Receive a query from a client
             query, client_address = resolver_socket.recvfrom(1024)
-            domain = query.decode()
+            domain = query.decode().strip()
 
-            # Check if the domain is in the cache
+            # Check if the domain or its suffixes are in the cache
             current_time = time.time()
-            # cache[domain]['timestamp'] is the time the domain was last queried
-            if domain in cache and current_time - cache[domain]['timestamp'] < cache_duration:
-                response = cache[domain]['response']
-            else:
+            response = None
+            domain_parts = domain.split('.')
+            
+            for i in range(len(domain_parts)):
+                suffix = '.'.join(domain_parts[i:])
+                if i != 0:
+                    suffix = '.' + suffix
+                if suffix in cache and current_time - cache[suffix]['timestamp'] < cache_duration:
+                    response = cache[suffix]['response']
+                    response_parts = response.decode().split(',')
+                    ip_port = response_parts[1].split(':')
+                    parent_ip = ip_port[0]
+                    parent_port = int(ip_port[1])
+                    domain = response_parts[0].strip()
+                    break
+
+            if response is None or response.decode().endswith("NS\n") or response.decode().endswith("NS"):
                 # Forward the query to the parent server
                 resolver_socket.sendto(query, (parent_ip, parent_port))
-                response, address = resolver_socket.recvfrom(1024)
+                response, _ = resolver_socket.recvfrom(1024)
+                
+                # Handle the case where the response ends with "NS" 
+                while response.decode().endswith("NS\n") or response.decode().endswith("NS"):
+                    
+                    # Extract the IP and port of the new parent server
+                    response_parts = response.decode().split(',')
+                    ip_port = response_parts[1].split(':')
+                    parent_ip = ip_port[0]
+                    parent_port = int(ip_port[1])
+                    domain = response_parts[0].strip()
+                    current_time = time.time()
+
+                    # Cache the response
+                    cache[domain] = {
+                        'response': response,
+                        'timestamp': current_time
+                    }
+        
+                    # Check if the domain or its suffixes are in the cache
+                    response = None
+                    domain_parts = domain.split('.')
+                    
+                    for i in range(len(domain_parts)):
+                        suffix = '.'.join(domain_parts[i:])
+                        if i != 0:
+                            suffix = '.' + suffix
+                        if suffix in cache and current_time - cache[suffix]['timestamp'] < cache_duration:
+                            response = cache[suffix]['response']
+                            response_parts = response.decode().split(',')
+                            ip_port = response_parts[1].split(':')
+                            parent_ip = ip_port[0]
+                            parent_port = int(ip_port[1])
+                            domain = response_parts[0].strip()
+                            break
+                    
+                    # Forward the query to the new parent server
+                    resolver_socket.sendto(query, (parent_ip, parent_port))
+                    response, _ = resolver_socket.recvfrom(1024)                    
 
                 # Cache the response
-                cache[domain] = {
+                cache[query.decode()] = {
                     'response': response,
                     'timestamp': current_time
                 }

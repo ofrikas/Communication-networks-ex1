@@ -29,12 +29,22 @@ def main():
             domain = client_data.decode().strip()
             
             isDomainFound = False
+            # Check if the domain is in the list of domains
             for line in lines:
-                lineDomain = line.split(',')[0].strip().lower()
-                if domain.lower().endswith(lineDomain):
+                lineInfo = line.split(',')
+                if domain.lower() == lineInfo[0]:
                     isDomainFound = True
                     server_socket.sendto(line.encode(), client_address)
                     break
+                
+            if not isDomainFound:
+                # Check if the domain's suffix is in the list of domains
+                for line in lines:
+                    lineInfo = line.split(',')
+                    if domain.lower().endswith(lineInfo[0])  and lineInfo[2].strip() == "NS":
+                        isDomainFound = True
+                        server_socket.sendto(line.encode(), client_address)
+                        break
                 
             if not isDomainFound:
                 server_socket.sendto("non-existent domain".encode(), client_address)
