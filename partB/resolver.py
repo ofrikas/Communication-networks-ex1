@@ -34,7 +34,18 @@ def main():
             else:
                 # Forward the query to the parent server
                 resolver_socket.sendto(query, (parent_ip, parent_port))
-                response, address = resolver_socket.recvfrom(1024)
+                response, _ = resolver_socket.recvfrom(1024)
+                
+                # Handle the case where the response ends with "NS" 
+                while response.decode().endswith("NS"):
+                    # Extract the IP and port of the new parent server
+                    response_parts = response.decode().split(',')
+                    ip_port = response_parts[1].split(':')
+                    parent_ip = ip_port[0]
+                    parent_port = int(ip_port[1])
+                    # Forward the query to the new parent server
+                    resolver_socket.sendto(query, (parent_ip, parent_port))
+                    response, _ = resolver_socket.recvfrom(1024)
 
                 # Cache the response
                 cache[domain] = {
