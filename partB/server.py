@@ -22,24 +22,24 @@ def main():
     server_socket.bind(('', myPort))
     print(f"Server listening on port {myPort}")
 
-    while True:
-        client_socket, client_address = server_socket.accept()
-        print(f"Connection from {client_address}")
-        client_socket.sendall(b"Hello, you are connected to the server.\n")
-        domain = client_socket.recv(1024).decode().strip()
-        
-        isDomainFound = False
-        for line in lines:
-            lineDomain = line.split(',')[0]
-            if domain == lineDomain:
-                isDomainFound = True
-                client_socket.sendall(line.encode())
-                client_socket.close()
-                break
+    try:
+        while True:
+            client_data, client_address = server_socket.recvfrom(1024)
+            print(f"Connection from {client_address}")
+            domain = client_data.decode().strip()
             
-        if not isDomainFound:
-            client_socket.sendall("non-existent domain".encode())       
-            client_socket.close()
+            isDomainFound = False
+            for line in lines:
+                lineDomain = line.split(',')[0].strip().lower()
+                if domain.lower().endswith(lineDomain):
+                    isDomainFound = True
+                    server_socket.sendto(line.encode(), client_address)
+                    break
+                
+            if not isDomainFound:
+                server_socket.sendto("non-existent domain".encode(), client_address)
+    finally:
+        server_socket.close()
 
 if __name__ == "__main__":
     main()

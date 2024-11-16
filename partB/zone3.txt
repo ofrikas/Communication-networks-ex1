@@ -1,0 +1,5 @@
+example.com,1.2.55.1,A
+www.subdomain.example.com,1.2.55.2,A
+mail.subdomain.example.com,1.2.55.3,A
+yaani.co.il,1.2.55.4,A
+goddamn.xxx.example.com,1.2.55.5,A

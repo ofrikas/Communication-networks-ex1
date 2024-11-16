@@ -34,7 +34,7 @@ def main():
             else:
                 # Forward the query to the parent server
                 resolver_socket.sendto(query, (parent_ip, parent_port))
-                response, _ = resolver_socket.recvfrom(1024)
+                response, address = resolver_socket.recvfrom(1024)
 
                 # Cache the response
                 cache[domain] = {
