@@ -26,7 +26,10 @@ def main():
         
 
             # Print the response
-            print(response.decode())
+            if response.decode() == "non-existent domain":
+                print("non-existent domain")
+            else:
+                print(response.decode().split(',')[1].strip())
         
     # print the response and close the socket
     except KeyboardInterrupt:
